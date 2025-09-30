@@ -5,4 +5,8 @@
     <string name="potions_placeholder">Pociones</string>
     <string name="health_placeholder">Salud del caballero</string>
     <string name="energy_placeholder">Energía</string>
+    <string name="watchface_health">Salud</string>
+    <string name="watchface_energy">Energía</string>
+    <string name="watchface_stats">Victorias %1$d | Derrotas %2$d | Pociones %3$d</string>
+    <string name="watchface_header">%1$d pasos • %2$d%% energía</string>
 </resources>
