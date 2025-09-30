@@ -99,6 +99,17 @@ private class KnightWorldCanvasRenderer(
         textSize = context.resources.displayMetrics.density * 15f
         textAlign = Paint.Align.CENTER
     }
+    private val soldierLabelPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = palette.onSurfaceMuted
+        textSize = context.resources.displayMetrics.density * 13f
+        textAlign = Paint.Align.LEFT
+    }
+    private val soldierValuePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = palette.onSurface
+        textSize = context.resources.displayMetrics.density * 16f
+        textAlign = Paint.Align.LEFT
+        typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+    }
     private val narrativePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
         color = palette.onSurfaceMuted
         textSize = context.resources.displayMetrics.density * 14f
@@ -109,6 +120,26 @@ private class KnightWorldCanvasRenderer(
         color = palette.surface
     }
     private val barFillPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val mapBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = context.resources.displayMetrics.density * 2f
+        color = palette.mapBorder
+    }
+    private val mapWaterPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = palette.mapWater
+    }
+    private val mapLandPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = palette.mapLand
+    }
+    private val mapPathPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = palette.mapPath
+        style = Paint.Style.STROKE
+        strokeWidth = context.resources.displayMetrics.density * 3f
+        strokeCap = Paint.Cap.ROUND
+    }
+    private val mapMarkerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = palette.primary
+    }
 
     private val batteryLevel = AtomicInteger(100)
     @Volatile private var steps: Int = 0
@@ -173,13 +204,33 @@ private class KnightWorldCanvasRenderer(
         datePaint.color = if (isAmbient) Color.LTGRAY else palette.onSurface
         infoPaint.color = textColor
         statPaint.color = textColor
+        soldierLabelPaint.color = if (isAmbient) Color.LTGRAY else palette.onSurfaceMuted
+        soldierValuePaint.color = if (isAmbient) Color.WHITE else palette.onSurface
         narrativePaint.color = if (isAmbient) Color.LTGRAY else palette.onSurfaceMuted
+        if (isAmbient) {
+            mapBorderPaint.color = Color.DKGRAY
+            mapPathPaint.color = Color.LTGRAY
+            mapMarkerPaint.color = Color.WHITE
+        } else {
+            mapBorderPaint.color = palette.mapBorder
+            mapPathPaint.color = palette.mapPath
+            mapMarkerPaint.color = palette.primary
+            mapWaterPaint.color = palette.mapWater
+            mapLandPaint.color = palette.mapLand
+        }
         timePaint.isAntiAlias = !isAmbient
         datePaint.isAntiAlias = !isAmbient
         infoPaint.isAntiAlias = !isAmbient
         statPaint.isAntiAlias = !isAmbient
+        soldierLabelPaint.isAntiAlias = !isAmbient
+        soldierValuePaint.isAntiAlias = !isAmbient
         narrativePaint.isAntiAlias = !isAmbient
         barBackgroundPaint.isAntiAlias = !isAmbient
+        mapBorderPaint.isAntiAlias = !isAmbient
+        mapWaterPaint.isAntiAlias = !isAmbient
+        mapLandPaint.isAntiAlias = !isAmbient
+        mapPathPaint.isAntiAlias = !isAmbient
+        mapMarkerPaint.isAntiAlias = !isAmbient
 
         val statsSnapshot = stats
         val lineSpacing = context.resources.displayMetrics.density * 12f
@@ -207,6 +258,16 @@ private class KnightWorldCanvasRenderer(
         currentTop = drawCenteredText(canvas, victoryLine, centerX, currentTop, statPaint)
         currentTop += lineSpacing
 
+        currentTop = drawWorldMap(
+            canvas = canvas,
+            centerX = centerX,
+            top = currentTop,
+            bounds = bounds,
+            stats = statsSnapshot,
+            isAmbient = isAmbient
+        )
+        currentTop += lineSpacing
+
         if (!isAmbient) {
             currentTop = drawProgressBar(
                 canvas = canvas,
@@ -229,6 +290,9 @@ private class KnightWorldCanvasRenderer(
             )
             currentTop += lineSpacing
         }
+
+        currentTop = drawSoldierData(canvas, bounds, currentTop, statsSnapshot)
+        currentTop += lineSpacing
 
         val narrative = statsSnapshot.narrative
         drawNarrative(canvas, narrative, bounds, currentTop)
@@ -329,6 +393,108 @@ private class KnightWorldCanvasRenderer(
         return top + barHeight
     }
 
+    private fun drawWorldMap(
+        canvas: Canvas,
+        centerX: Float,
+        top: Float,
+        bounds: Rect,
+        stats: KnightWorldStats,
+        isAmbient: Boolean
+    ): Float {
+        val density = context.resources.displayMetrics.density
+        val radius = bounds.width() * 0.28f
+        val centerY = top + radius
+        val circle = RectF(centerX - radius, top, centerX + radius, top + radius * 2)
+
+        if (isAmbient) {
+            canvas.drawOval(circle, mapBorderPaint)
+        } else {
+            canvas.drawOval(circle, mapWaterPaint)
+            canvas.drawOval(circle, mapBorderPaint)
+
+            val landInset = radius * 0.35f
+            val landRect = RectF(
+                circle.left + landInset,
+                circle.top + landInset * 0.6f,
+                circle.right - landInset * 1.2f,
+                circle.bottom - landInset * 0.4f
+            )
+            canvas.save()
+            canvas.rotate(-12f, centerX, centerY)
+            canvas.drawOval(landRect, mapLandPaint)
+            canvas.restore()
+
+            val pathProgress = stats.steps % 360
+            val pathStart = -90f
+            val pathSweep = pathProgress.toFloat().coerceAtLeast(20f)
+            val pathRect = RectF(
+                circle.left + radius * 0.15f,
+                circle.top + radius * 0.15f,
+                circle.right - radius * 0.15f,
+                circle.bottom - radius * 0.15f
+            )
+            canvas.drawArc(pathRect, pathStart, pathSweep, false, mapPathPaint)
+
+            val markerAngle = Math.toRadians((pathStart + pathSweep).toDouble())
+            val markerRadius = (pathRect.width() / 2f)
+            val markerX = centerX + (markerRadius * kotlin.math.cos(markerAngle)).toFloat()
+            val markerY = centerY + (markerRadius * kotlin.math.sin(markerAngle)).toFloat()
+            canvas.drawCircle(markerX, markerY, density * 4f, mapMarkerPaint)
+
+            val gridPaint = Paint(mapBorderPaint).apply {
+                color = palette.mapGrid
+                strokeWidth = density * 1f
+            }
+            val horizontalY = centerY
+            canvas.drawLine(circle.left + radius * 0.2f, horizontalY, circle.right - radius * 0.2f, horizontalY, gridPaint)
+            val verticalX = centerX
+            canvas.drawLine(verticalX, circle.top + radius * 0.2f, verticalX, circle.bottom - radius * 0.2f, gridPaint)
+        }
+
+        val zoneText = context.getString(R.string.watchface_zone, stats.mapZone)
+        val labelTop = circle.bottom + density * 8f
+        return drawCenteredText(canvas, zoneText, centerX, labelTop, infoPaint)
+    }
+
+    private fun drawSoldierData(
+        canvas: Canvas,
+        bounds: Rect,
+        top: Float,
+        stats: KnightWorldStats
+    ): Float {
+        val density = context.resources.displayMetrics.density
+        val left = bounds.left + density * 24f
+        var currentTop = top
+        val labelMetrics = soldierLabelPaint.fontMetrics
+        val valueMetrics = soldierValuePaint.fontMetrics
+        val labelHeight = labelMetrics.descent - labelMetrics.ascent
+
+        fun drawLine(labelRes: Int, value: String) {
+            val label = context.getString(labelRes)
+            val labelBaseline = currentTop - labelMetrics.ascent
+            canvas.drawText(label, left, labelBaseline, soldierLabelPaint)
+
+            val valueBaseline = labelBaseline + labelHeight + density * 2f - valueMetrics.ascent
+            canvas.drawText(value, left, valueBaseline, soldierValuePaint)
+
+            currentTop = valueBaseline + valueMetrics.descent + density * 8f
+        }
+
+        drawLine(R.string.watchface_soldier_name, stats.soldierName)
+        drawLine(R.string.watchface_soldier_rank, stats.soldierRank)
+        drawLine(R.string.watchface_soldier_mission, stats.mission)
+
+        val battleSummary = context.getString(
+            R.string.watchface_soldier_battles,
+            stats.battlesWon,
+            stats.battlesLost,
+            stats.potions
+        )
+        drawLine(R.string.watchface_soldier_report, battleSummary)
+
+        return currentTop
+    }
+
     private fun drawNarrative(canvas: Canvas, text: String, bounds: Rect, top: Float) {
         if (text.isBlank()) return
         val availableWidth = (bounds.width() * 0.78f).toInt()
@@ -357,4 +523,9 @@ private class Palette(context: Context) {
     val onSurfaceMuted: Int = 0xCCFFFFFF.toInt()
     val health: Int = ContextCompat.getColor(context, R.color.knight_health)
     val energy: Int = ContextCompat.getColor(context, R.color.knight_energy)
+    val mapWater: Int = ContextCompat.getColor(context, R.color.knight_map_water)
+    val mapLand: Int = ContextCompat.getColor(context, R.color.knight_map_land)
+    val mapPath: Int = ContextCompat.getColor(context, R.color.knight_map_path)
+    val mapBorder: Int = ContextCompat.getColor(context, R.color.knight_map_border)
+    val mapGrid: Int = 0x88FFFFFF.toInt()
 }
