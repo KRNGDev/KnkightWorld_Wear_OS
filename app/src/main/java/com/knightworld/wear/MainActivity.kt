@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -52,7 +53,6 @@ import androidx.core.content.ContextCompat
 import androidx.wear.compose.material.Chip
 import androidx.wear.compose.material.ChipDefaults
 import androidx.wear.compose.material.Icon
-import androidx.wear.compose.material.LinearProgressIndicator
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Scaffold
 import androidx.wear.compose.material.Text
@@ -299,8 +299,8 @@ fun ProgressBar(
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
-            LinearProgressIndicator(
-                progress = value.coerceIn(0f, 1f),
+            KnightLinearProgressIndicator(
+                progress = value,
                 modifier = Modifier
                     .weight(1f)
                     .height(8.dp),
@@ -308,6 +308,28 @@ fun ProgressBar(
                 backgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.3f)
             )
         }
+    }
+}
+
+@Composable
+private fun KnightLinearProgressIndicator(
+    progress: Float,
+    modifier: Modifier = Modifier,
+    color: Color,
+    backgroundColor: Color
+) {
+    Box(
+        modifier
+            .clip(CircleShape)
+            .background(backgroundColor)
+    ) {
+        Box(
+            Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(progress.coerceIn(0f, 1f))
+                .clip(CircleShape)
+                .background(color)
+        )
     }
 }
 

@@ -17,8 +17,7 @@ private val colorPalette = Colors(
     onSecondary = Color.White,
     onBackground = Color.White,
     onSurface = Color.White,
-    onError = Color.White,
-    isLight = false
+    onError = Color.White
 )
 
 @Composable
