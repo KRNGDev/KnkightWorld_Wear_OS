@@ -55,10 +55,10 @@ android {
 }
 
 dependencies {
-    implementation(platform("androidx.wear.compose:compose-bom:1.2.0"))
-    implementation("androidx.wear.compose:compose-material")
-    implementation("androidx.wear.compose:compose-foundation")
-    implementation("androidx.wear.compose:compose-navigation")
+    val wearComposeVersion = "1.3.0"
+    implementation("androidx.wear.compose:compose-material:$wearComposeVersion")
+    implementation("androidx.wear.compose:compose-foundation:$wearComposeVersion")
+    implementation("androidx.wear.compose:compose-navigation:$wearComposeVersion")
 
     implementation("androidx.activity:activity-compose:1.7.2")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
