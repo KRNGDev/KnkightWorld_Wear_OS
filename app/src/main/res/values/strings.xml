@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">KnightWorld Wear</string>
+    <string name="steps_placeholder">Pasos de hoy</string>
+    <string name="battles_placeholder">Batallas ganadas</string>
+    <string name="potions_placeholder">Pociones</string>
+    <string name="health_placeholder">Salud del caballero</string>
+    <string name="energy_placeholder">Energía</string>
+</resources>

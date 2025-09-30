@@ -1,0 +1,9 @@
+<resources>
+    <color name="knight_primary">#FFD54F</color>
+    <color name="knight_on_primary">#1C1C1C</color>
+    <color name="knight_background">#101820</color>
+    <color name="knight_surface">#182230</color>
+    <color name="knight_accent">#FF7043</color>
+    <color name="knight_health">#66BB6A</color>
+    <color name="knight_energy">#42A5F5</color>
+</resources>
