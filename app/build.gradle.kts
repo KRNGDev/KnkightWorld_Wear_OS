@@ -53,4 +53,5 @@ dependencies {
     implementation("androidx.wear.watchface:watchface:$watchfaceVersion")
     implementation("androidx.wear.watchface:watchface-style:$watchfaceVersion")
     implementation("androidx.wear.watchface:watchface-complications-data-source-ktx:$watchfaceVersion")
+    implementation("androidx.wear.watchface:watchface-format:$watchfaceVersion")
 }
