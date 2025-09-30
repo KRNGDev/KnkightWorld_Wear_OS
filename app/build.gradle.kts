@@ -69,6 +69,9 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.5.3")
     implementation("androidx.compose.ui:ui:1.5.3")
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.3")
+
+    implementation("androidx.compose.material:material-icons-extended:1.5.3")
+
     implementation("com.google.android.material:material:1.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 
