@@ -125,7 +125,7 @@ private class KnightWorldRenderer(
         style = Paint.Style.FILL
         isAntiAlias = true
     }
-
+    
     private val moralePaint = Paint().apply {
         color = ContextCompat.getColor(appContext, R.color.knight_morale)
         style = Paint.Style.FILL
@@ -223,7 +223,6 @@ private class KnightWorldRenderer(
         canvas.drawText(rankLabel, padding, bounds.height() * 0.24f, mutedTextPaint)
         primaryTextPaint.textSize = bounds.height() * 0.055f
         canvas.drawText(stats.rank, padding, bounds.height() * 0.29f, primaryTextPaint)
-
         mutedTextPaint.textSize = bounds.height() * 0.045f
         val missionLabel = appContext.getString(R.string.watchface_soldier_mission).uppercase(Locale.getDefault())
         canvas.drawText(missionLabel, padding, bounds.height() * 0.34f, mutedTextPaint)
