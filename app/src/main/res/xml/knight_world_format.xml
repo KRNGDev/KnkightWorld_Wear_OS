@@ -4,6 +4,6 @@
 
     <wf:metadata
         android:name="KnightWorld Tactical"
-        android:description="A tactical dossier with soldier stats, mission map, and digital time." />
+        android:description="@string/watch_face_description" />
 
 </wf:watch-face-format>
