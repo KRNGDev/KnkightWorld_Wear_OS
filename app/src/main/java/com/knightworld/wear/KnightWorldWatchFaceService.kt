@@ -26,7 +26,7 @@ private const val INTERACTIVE_UPDATE_RATE_MS = 60_000L
 
 class KnightWorldWatchFaceService : WatchFaceService() {
 
-    override suspend fun createComplicationSlotsManager(
+    override fun createComplicationSlotsManager(
         currentUserStyleRepository: CurrentUserStyleRepository
     ): ComplicationSlotsManager =
         ComplicationSlotsManager(emptyList(), currentUserStyleRepository)
@@ -43,7 +43,7 @@ class KnightWorldWatchFaceService : WatchFaceService() {
             currentUserStyleRepository,
             watchState
         )
-        return WatchFace(WatchFaceType.DIGITAL, renderer, complicationSlotsManager)
+        return WatchFace(WatchFaceType.DIGITAL, renderer)
     }
 }
 
@@ -52,7 +52,7 @@ private class KnightWorldRenderer(
     surfaceHolder: SurfaceHolder,
     currentUserStyleRepository: CurrentUserStyleRepository,
     watchState: WatchState
-) : Renderer.CanvasRenderer2(
+) : Renderer.CanvasRenderer(
     surfaceHolder,
     currentUserStyleRepository,
     watchState,
@@ -132,8 +132,6 @@ private class KnightWorldRenderer(
         isAntiAlias = true
     }
 
-    override suspend fun createSharedAssets(): SharedAssets = KnightWorldSharedAssets()
-
     override fun render(canvas: Canvas, bounds: Rect, zonedDateTime: ZonedDateTime) {
         val stats = KnightWorldStatsProvider.fromTime(zonedDateTime)
 
@@ -143,15 +141,6 @@ private class KnightWorldRenderer(
         drawSoldierInfo(canvas, bounds, stats)
         drawStatBars(canvas, bounds, stats)
         drawMissionStatus(canvas, bounds, stats)
-    }
-
-    override fun renderHighlightLayer(
-        canvas: Canvas,
-        bounds: Rect,
-        zonedDateTime: ZonedDateTime
-    ) {
-        // No special highlight layer content; draw nothing.
-        canvas.drawColor(Color.TRANSPARENT)
     }
 
     private fun drawMap(canvas: Canvas, bounds: Rect, stats: KnightWorldStats) {
@@ -317,11 +306,5 @@ private class KnightWorldRenderer(
         val statusText = appContext.getString(R.string.watchface_status, stats.status)
         val statusWidth = primaryTextPaint.measureText(statusText)
         canvas.drawText(statusText, bounds.exactCenterX() - statusWidth / 2f, bounds.height() * 0.95f, primaryTextPaint)
-    }
-}
-
-private class KnightWorldSharedAssets : Renderer.SharedAssets {
-    override fun onDestroy() {
-        // No-op
     }
 }
