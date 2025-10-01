@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <wf:watch-face-format xmlns:wf="http://schemas.android.com/apk/res-auto/watchface"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
 
     <wf:metadata
         android:name="KnightWorld Tactical"
         android:description="A tactical dossier with soldier stats, mission map, and digital time." />
 
+
 </wf:watch-face-format>
+
