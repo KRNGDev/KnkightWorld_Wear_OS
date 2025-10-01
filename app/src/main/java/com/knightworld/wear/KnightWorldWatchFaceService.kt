@@ -126,14 +126,25 @@ private class KnightWorldRenderer(
         isAntiAlias = true
     }
 
+
+    private val moralePaint = Paint().apply {
+        color = ContextCompat.getColor(appContext, R.color.knight_morale)
+        style = Paint.Style.FILL
+        isAntiAlias = true
+    }
+
     override suspend fun createSharedAssets(): SharedAssets = KnightWorldSharedAssets()
 
     override fun render(canvas: Canvas, bounds: Rect, zonedDateTime: ZonedDateTime) {
+        val stats = KnightWorldStatsProvider.fromTime(zonedDateTime)
+
         canvas.drawRect(bounds, backgroundPaint)
-        drawMap(canvas, bounds)
+        drawMap(canvas, bounds, stats)
         drawTimeAndDate(canvas, bounds, zonedDateTime)
-        drawSoldierInfo(canvas, bounds)
-        drawStatBars(canvas, bounds)
+        drawSoldierInfo(canvas, bounds, stats)
+        drawStatBars(canvas, bounds, stats)
+        drawMissionStatus(canvas, bounds, stats)
+
     }
 
     override fun renderHighlightLayer(
@@ -145,7 +156,9 @@ private class KnightWorldRenderer(
         canvas.drawColor(Color.TRANSPARENT)
     }
 
-    private fun drawMap(canvas: Canvas, bounds: Rect) {
+
+    private fun drawMap(canvas: Canvas, bounds: Rect, stats: KnightWorldStats) {
+
         val mapWidth = bounds.width() * 0.75f
         val mapHeight = bounds.height() * 0.4f
         val mapRect = RectF(
@@ -175,6 +188,16 @@ private class KnightWorldRenderer(
         }
         canvas.drawPath(route, pathPaint)
         canvas.drawRoundRect(mapRect, 36f, 36f, mapBorderPaint)
+
+        mutedTextPaint.textSize = bounds.height() * 0.045f
+        val zoneText = appContext.getString(R.string.watchface_zone, stats.zone)
+        val zoneWidth = mutedTextPaint.measureText(zoneText)
+        canvas.drawText(zoneText, mapRect.centerX() - zoneWidth / 2f, mapRect.bottom - bounds.height() * 0.02f, mutedTextPaint)
+        primaryTextPaint.textSize = bounds.height() * 0.05f
+        val missionText = stats.mission.uppercase(Locale.getDefault())
+        val missionWidth = primaryTextPaint.measureText(missionText)
+        canvas.drawText(missionText, mapRect.centerX() - missionWidth / 2f, mapRect.top + bounds.height() * 0.055f, primaryTextPaint)
+
     }
 
     private fun drawTimeAndDate(canvas: Canvas, bounds: Rect, zonedDateTime: ZonedDateTime) {
@@ -192,32 +215,41 @@ private class KnightWorldRenderer(
         canvas.drawText(dateText, centerX - dateWidth / 2f, bounds.height() * 0.36f, mutedTextPaint)
     }
 
-    private fun drawSoldierInfo(canvas: Canvas, bounds: Rect) {
+
+    private fun drawSoldierInfo(canvas: Canvas, bounds: Rect, stats: KnightWorldStats) {
+
         val padding = bounds.width() * 0.08f
         primaryTextPaint.textSize = bounds.height() * 0.065f
         mutedTextPaint.textSize = bounds.height() * 0.045f
 
         val soldierNameLabel = appContext.getString(R.string.watchface_soldier_name)
         canvas.drawText(soldierNameLabel.uppercase(Locale.getDefault()), padding, bounds.height() * 0.12f, mutedTextPaint)
-        canvas.drawText("A. Valiente", padding, bounds.height() * 0.18f, primaryTextPaint)
+
+        canvas.drawText(stats.soldierName, padding, bounds.height() * 0.18f, primaryTextPaint)
+
 
         val rankLabel = appContext.getString(R.string.watchface_soldier_rank).uppercase(Locale.getDefault())
         canvas.drawText(rankLabel, padding, bounds.height() * 0.24f, mutedTextPaint)
         primaryTextPaint.textSize = bounds.height() * 0.055f
-        canvas.drawText("Caballero", padding, bounds.height() * 0.29f, primaryTextPaint)
+
+        canvas.drawText(stats.rank, padding, bounds.height() * 0.29f, primaryTextPaint)
+
 
         mutedTextPaint.textSize = bounds.height() * 0.045f
         val missionLabel = appContext.getString(R.string.watchface_soldier_mission).uppercase(Locale.getDefault())
         canvas.drawText(missionLabel, padding, bounds.height() * 0.34f, mutedTextPaint)
         primaryTextPaint.textSize = bounds.height() * 0.05f
-        canvas.drawText("Rescate Delta", padding, bounds.height() * 0.39f, primaryTextPaint)
+
+        canvas.drawText(stats.mission, padding, bounds.height() * 0.39f, primaryTextPaint)
     }
 
-    private fun drawStatBars(canvas: Canvas, bounds: Rect) {
+    private fun drawStatBars(canvas: Canvas, bounds: Rect, stats: KnightWorldStats) {
         val barLeft = bounds.width() * 0.1f
         val barRight = bounds.width() * 0.9f
-        val barHeight = bounds.height() * 0.05f
-        val topStart = bounds.height() * 0.82f
+        val barHeight = bounds.height() * 0.045f
+        val verticalSpacing = bounds.height() * 0.03f
+        val topStart = bounds.height() * 0.68f
+
 
         drawStatBar(
             canvas,
@@ -226,7 +258,9 @@ private class KnightWorldRenderer(
             barRight,
             topStart,
             barHeight,
-            0.76f,
+
+            stats.healthPercent / 100f,
+
             healthPaint
         )
 
@@ -235,11 +269,24 @@ private class KnightWorldRenderer(
             appContext.getString(R.string.watchface_energy),
             barLeft,
             barRight,
-            topStart + barHeight + bounds.height() * 0.03f,
+
+            topStart + barHeight + verticalSpacing,
             barHeight,
-            0.58f,
+            stats.energyPercent / 100f,
             energyPaint
         )
+
+        drawStatBar(
+            canvas,
+            appContext.getString(R.string.watchface_morale),
+            barLeft,
+            barRight,
+            topStart + (barHeight + verticalSpacing) * 2,
+            barHeight,
+            stats.moralePercent / 100f,
+            moralePaint
+        )
+
     }
 
     private fun drawStatBar(
@@ -265,6 +312,32 @@ private class KnightWorldRenderer(
         val textWidth = primaryTextPaint.measureText(percentageText)
         canvas.drawText(percentageText, right - textWidth, top + height * 0.8f, primaryTextPaint)
     }
+
+
+    private fun drawMissionStatus(canvas: Canvas, bounds: Rect, stats: KnightWorldStats) {
+        mutedTextPaint.textSize = bounds.height() * 0.038f
+        val reportLabel = appContext.getString(R.string.watchface_soldier_report_label).uppercase(Locale.getDefault())
+        val labelWidth = mutedTextPaint.measureText(reportLabel)
+        val labelY = bounds.height() * 0.83f
+        canvas.drawText(reportLabel, bounds.exactCenterX() - labelWidth / 2f, labelY, mutedTextPaint)
+
+        mutedTextPaint.textSize = bounds.height() * 0.042f
+        val reportText = appContext.getString(
+            R.string.watchface_soldier_report,
+            stats.victories,
+            stats.defeats,
+            stats.potions
+        )
+        val reportWidth = mutedTextPaint.measureText(reportText)
+        val reportY = bounds.height() * 0.88f
+        canvas.drawText(reportText, bounds.exactCenterX() - reportWidth / 2f, reportY, mutedTextPaint)
+
+        primaryTextPaint.textSize = bounds.height() * 0.05f
+        val statusText = appContext.getString(R.string.watchface_status, stats.status)
+        val statusWidth = primaryTextPaint.measureText(statusText)
+        canvas.drawText(statusText, bounds.exactCenterX() - statusWidth / 2f, bounds.height() * 0.95f, primaryTextPaint)
+    }
+
 }
 
 private class KnightWorldSharedAssets : Renderer.SharedAssets {

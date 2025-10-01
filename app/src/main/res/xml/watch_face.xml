@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <watch-face xmlns:android="http://schemas.android.com/apk/res/android">
 
     <metadata
@@ -19,4 +18,3 @@
         android:resource="@xml/knight_world_format" />
 
 </watch-face>
-
