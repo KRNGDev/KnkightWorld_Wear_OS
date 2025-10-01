@@ -17,5 +17,5 @@
     <string name="watchface_soldier_report_label">Informe</string>
     <string name="watchface_soldier_report">%1$d victorias · %2$d derrotas · %3$d pociones</string>
     <string name="watchface_status">Estado: %1$s</string>
-    <string name="watch_face_description">Tablero táctico con hora, fecha y estado de misión para el escuadrón KnightWorld.</string>
+    <string name="watch_face_description">A tactical dossier with soldier stats, mission map, and digital time.</string>
 </resources>
