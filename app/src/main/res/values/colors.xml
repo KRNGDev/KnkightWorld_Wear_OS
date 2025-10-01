@@ -7,6 +7,7 @@
     <color name="knight_health">#66BB6A</color>
     <color name="knight_energy">#42A5F5</color>
     <color name="knight_morale">#AB47BC</color>
+
     <color name="knight_map_water">#1B2735</color>
     <color name="knight_map_land">#2F3F52</color>
     <color name="knight_map_path">#FFB74D</color>
