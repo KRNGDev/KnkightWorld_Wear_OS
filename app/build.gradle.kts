@@ -50,8 +50,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.wear:wear:1.3.0")
-    // Watch face libraries 1.2.0 are the latest stable artifacts available from Google Maven.
-    val watchfaceVersion = "1.2.0"
+    // Use the latest stable Watch Face libraries published to Google Maven.
+    val watchfaceVersion = "1.1.1"
     implementation("androidx.wear.watchface:watchface:$watchfaceVersion")
     implementation("androidx.wear.watchface:watchface-style:$watchfaceVersion")
     implementation("androidx.wear.watchface:watchface-complications-data-source-ktx:$watchfaceVersion")
