@@ -38,10 +38,7 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-
-
     packaging {
-
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
@@ -53,11 +50,10 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.wear:wear:1.3.0")
-    val watchfaceVersion = "1.3.0"
-
+    // Watch face libraries 1.2.0 are the latest stable artifacts available from Google Maven.
+    val watchfaceVersion = "1.2.0"
     implementation("androidx.wear.watchface:watchface:$watchfaceVersion")
     implementation("androidx.wear.watchface:watchface-style:$watchfaceVersion")
     implementation("androidx.wear.watchface:watchface-complications-data-source-ktx:$watchfaceVersion")
     implementation("androidx.wear.watchface:watchface-format:$watchfaceVersion")
-
 }
