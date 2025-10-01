@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<watch-face xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <metadata
+        app:watchFaceId="knight_world"
+        app:watchFaceName="Knight World"
+        app:watchFaceDescription="Mission control themed digital watch face" />
+
+    <color-palette
+        app:primaryColor="#FF1E1F3A"
+        app:onPrimaryColor="#FFFFFFFF"
+        app:surfaceColor="#FF2B2D52"
+        app:secondaryColor="#FF6DC9FF"
+        app:onSecondaryColor="#FF0D1B2C"
+        app:accentColor="#FFF5B74F" />
+
+    <layer-group app:id="background">
+        <shape-rectangle
+            app:fillColor="#FF10142B" />
+        <shape-rectangle
+            app:cornerRadius="36dp"
+            app:fillColor="#FF223055"
+            app:insetTop="12dp"
+            app:insetBottom="64dp"
+            app:insetStart="12dp"
+            app:insetEnd="12dp" />
+    </layer-group>
+
+    <box app:width="match_parent" app:height="match_parent">
+        <text
+            app:id="time_text"
+            app:positionX="0.5"
+            app:positionY="0.32"
+            app:textSource="time"
+            app:timePattern="HH:mm"
+            app:textStyle="bold"
+            app:textSize="0.18"
+            app:textColor="#FFFFFFFF" />
+
+        <text
+            app:id="date_text"
+            app:positionX="0.5"
+            app:positionY="0.42"
+            app:textSource="date"
+            app:datePattern="EEE, d MMM"
+            app:textSize="0.06"
+            app:textColor="#FF9AA8C4" />
+
+        <text
+            app:id="mission_label"
+            app:positionX="0.5"
+            app:positionY="0.58"
+            app:textSource="static"
+            app:staticText="MISSION: KNIGHTFALL"
+            app:textStyle="bold"
+            app:textSize="0.05"
+            app:textColor="#FFFFFFFF" />
+
+        <progress-bar
+            app:id="health_bar"
+            app:positionX="0.5"
+            app:positionY="0.68"
+            app:widthFraction="0.75"
+            app:height="10dp"
+            app:foregroundColor="#FF5AE4A5"
+            app:backgroundColor="#332EDB8D"
+            app:valueSource="battery"
+            app:cornerRadius="5dp" />
+
+        <complication
+            app:id="left_complication"
+            app:positionX="0.2"
+            app:positionY="0.85"
+            app:defaultProviderType="shortText"
+            app:boundsWidth="64dp"
+            app:boundsHeight="32dp" />
+
+        <complication
+            app:id="right_complication"
+            app:positionX="0.8"
+            app:positionY="0.85"
+            app:defaultProviderType="shortText"
+            app:boundsWidth="64dp"
+            app:boundsHeight="32dp" />
+    </box>
+</watch-face>
