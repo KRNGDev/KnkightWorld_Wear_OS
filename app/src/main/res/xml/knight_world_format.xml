@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wf:watch-face-format xmlns:wf="http://schemas.android.com/apk/res-auto/watchface"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <wf:metadata
+        android:name="KnightWorld Tactical"
+        android:description="A tactical dossier with soldier stats, mission map, and digital time." />
+
+    <wf:palette>
+        <wf:color wf:id="background" android:color="#FF0D111A" />
+        <wf:color wf:id="surface" android:color="#FF1A2333" />
+        <wf:color wf:id="primary" android:color="#FF4CAF50" />
+        <wf:color wf:id="onSurface" android:color="#FFE8EDF6" />
+        <wf:color wf:id="onSurfaceMuted" android:color="#FF7A879F" />
+        <wf:color wf:id="accent" android:color="#FF00BCD4" />
+    </wf:palette>
+</wf:watch-face-format>
