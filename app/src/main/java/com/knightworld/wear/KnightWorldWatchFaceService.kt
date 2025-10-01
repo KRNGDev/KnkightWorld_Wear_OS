@@ -26,7 +26,7 @@ private const val INTERACTIVE_UPDATE_RATE_MS = 60_000L
 
 class KnightWorldWatchFaceService : WatchFaceService() {
 
-    override suspend fun createComplicationSlotsManager(
+    override fun createComplicationSlotsManager(
         currentUserStyleRepository: CurrentUserStyleRepository
     ): ComplicationSlotsManager =
         ComplicationSlotsManager(emptyList(), currentUserStyleRepository)
