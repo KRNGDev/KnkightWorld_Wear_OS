@@ -1,25 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.KnightWorldWear" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:windowIsTranslucent">false</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowShowWallpaper">false</item>
+    <style name="Theme.KnightWorldWear" parent="@android:style/Theme.DeviceDefault">
         <item name="android:colorBackground">@color/knight_background</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-        <item name="android:windowAllowReturnTransitionOverlap">true</item>
-        <item name="android:windowAllowEnterTransitionOverlap">true</item>
-        <item name="android:windowContentTransitions">false</item>
-        <item name="android:enforceNavigationBarContrast">false</item>
-        <item name="android:enforceStatusBarContrast">false</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
-        <item name="colorPrimary">@color/knight_primary</item>
-        <item name="colorPrimaryVariant">@color/knight_surface</item>
-        <item name="colorOnPrimary">@color/knight_on_primary</item>
-        <item name="colorSecondary">@color/knight_accent</item>
-        <item name="colorSecondaryVariant">@color/knight_accent</item>
-        <item name="colorOnSecondary">@android:color/white</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+        <item name="android:windowShowWallpaper">false</item>
     </style>
 </resources>

@@ -5,4 +5,17 @@
     <string name="potions_placeholder">Pociones</string>
     <string name="health_placeholder">Salud del caballero</string>
     <string name="energy_placeholder">Energía</string>
+    <string name="watchface_health">Salud</string>
+    <string name="watchface_energy">Energía</string>
+    <string name="watchface_morale">Moral</string>
+    <string name="watchface_stats">Victorias %1$d | Derrotas %2$d | Pociones %3$d</string>
+    <string name="watchface_header">%1$d pasos • %2$d%% energía</string>
+    <string name="watchface_zone">Zona: %1$s</string>
+    <string name="watchface_soldier_name">Soldado</string>
+    <string name="watchface_soldier_rank">Rango</string>
+    <string name="watchface_soldier_mission">Misión</string>
+    <string name="watchface_soldier_report_label">Informe</string>
+    <string name="watchface_soldier_report">%1$d victorias · %2$d derrotas · %3$d pociones</string>
+    <string name="watchface_status">Estado: %1$s</string>
+    <string name="watch_face_description">Tablero táctico con hora, fecha y estado de misión para el escuadrón KnightWorld.</string>
 </resources>

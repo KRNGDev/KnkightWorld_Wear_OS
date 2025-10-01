@@ -39,15 +39,7 @@ android {
         jvmTarget = "17"
     }
 
-    buildFeatures {
-        compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
-    }
-
-    packagingOptions {
+    packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
@@ -55,21 +47,13 @@ android {
 }
 
 dependencies {
-    implementation(platform("androidx.wear.compose:compose-bom:1.2.0"))
-    implementation("androidx.wear.compose:compose-material")
-    implementation("androidx.wear.compose:compose-foundation")
-    implementation("androidx.wear.compose:compose-navigation")
-
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.wear:wear:1.3.0")
-    implementation("androidx.navigation:navigation-runtime-ktx:2.7.5")
-    implementation("androidx.compose.runtime:runtime-livedata:1.5.3")
-    implementation("androidx.compose.ui:ui:1.5.3")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.5.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-
-    debugImplementation("androidx.compose.ui:ui-tooling:1.5.3")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:1.5.3")
+    val watchfaceVersion = "1.3.0"
+    implementation("androidx.wear.watchface:watchface:$watchfaceVersion")
+    implementation("androidx.wear.watchface:watchface-style:$watchfaceVersion")
+    implementation("androidx.wear.watchface:watchface-complications-data-source-ktx:$watchfaceVersion")
+    implementation("androidx.wear.watchface:watchface-format:$watchfaceVersion")
 }

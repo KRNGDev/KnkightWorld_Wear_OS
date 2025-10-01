@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<watch-face xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <metadata
+        android:name="com.google.android.wearable.watchface.preview"
+        android:resource="@drawable/knight_world_preview" />
+
+    <metadata
+        android:name="com.google.android.wearable.watchface.preview_circular"
+        android:resource="@drawable/knight_world_preview_round" />
+
+    <metadata
+        android:name="com.google.android.wearable.watchface.companionBitmap"
+        android:resource="@drawable/knight_world_preview" />
+
+    <metadata
+        android:name="com.google.android.wearable.watchface.wff"
+        android:resource="@xml/knight_world_format" />
+
+</watch-face>
