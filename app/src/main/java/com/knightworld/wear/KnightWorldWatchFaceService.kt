@@ -14,7 +14,7 @@ import androidx.wear.watchface.CanvasType
 import androidx.wear.watchface.ComplicationSlotsManager
 import androidx.wear.watchface.Renderer
 import androidx.wear.watchface.WatchFace
-import androidx.wear.watchface.WatchFaceService
+import androidx.wear.watchface.ListenableWatchFaceService
 import androidx.wear.watchface.WatchFaceType
 import androidx.wear.watchface.WatchState
 import androidx.wear.watchface.style.CurrentUserStyleRepository
@@ -25,7 +25,7 @@ import java.util.Locale
 
 private const val INTERACTIVE_UPDATE_RATE_MS = 60_000L
 
-class KnightWorldWatchFaceService : WatchFaceService() {
+class KnightWorldWatchFaceService : ListenableWatchFaceService() {
 
     override fun createComplicationSlotsManager(
         currentUserStyleRepository: CurrentUserStyleRepository
