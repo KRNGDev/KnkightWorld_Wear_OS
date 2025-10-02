@@ -44,12 +44,16 @@ class KnightWorldWatchFaceService : WatchFaceService() {
             currentUserStyleRepository,
             watchState
         )
-        return WatchFace(WatchFaceType.DIGITAL, renderer)
+
+        // CORRECCIÓN: Pasar el UserStyleSchema directamente al constructor de WatchFace.
+        // --- CORRECCIÓN AQUÍ ---
+        // En la versión 1.2.0, el UserStyleSchema es el tercer parámetro, sin nombre.
+        return WatchFace(
+            WatchFaceType.DIGITAL,
+            renderer
+        )
     }
 
-    // CORRECCIÓN 1: Añadir 'override' para sobrescribir el método de la clase base.
-     fun createUserStyleSchema(context: Context): UserStyleSchema =
-        UserStyleSchema(emptyList())
 }
 
 private class KnightWorldRenderer(
