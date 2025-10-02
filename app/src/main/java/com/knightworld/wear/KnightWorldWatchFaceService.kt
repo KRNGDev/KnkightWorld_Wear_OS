@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.wear.watchface.CanvasType
 import androidx.wear.watchface.ComplicationSlotsManager
 import androidx.wear.watchface.Renderer
+import androidx.wear.watchface.Renderer.SharedAssets
 import androidx.wear.watchface.WatchFace
 import androidx.wear.watchface.ListenableWatchFaceService
 import androidx.wear.watchface.WatchFaceType
@@ -26,6 +27,8 @@ import java.util.Locale
 private const val INTERACTIVE_UPDATE_RATE_MS = 60_000L
 
 class KnightWorldWatchFaceService : ListenableWatchFaceService() {
+
+    override fun createUserStyleSchema(): UserStyleSchema = UserStyleSchema(emptyList())
 
     override fun createComplicationSlotsManager(
         currentUserStyleRepository: CurrentUserStyleRepository
@@ -50,7 +53,9 @@ class KnightWorldWatchFaceService : ListenableWatchFaceService() {
         // En la versión 1.2.0, el UserStyleSchema es el tercer parámetro, sin nombre.
         return WatchFace(
             WatchFaceType.DIGITAL,
-            renderer
+            renderer,
+            complicationSlotsManager,
+            currentUserStyleRepository
         )
     }
 
