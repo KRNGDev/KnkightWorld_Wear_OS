@@ -50,7 +50,7 @@ dependencies {
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.wear:wear:1.3.0")
     // Use the latest stable Watch Face libraries published to Google Maven.
-    val watchfaceVersion = "1.2.0"
+    val watchfaceVersion = "1.3.0"
     implementation("androidx.wear.watchface:watchface:$watchfaceVersion")
     implementation("androidx.wear.watchface:watchface-style:$watchfaceVersion")
     implementation("androidx.wear.watchface:watchface-format:$watchfaceVersion")
