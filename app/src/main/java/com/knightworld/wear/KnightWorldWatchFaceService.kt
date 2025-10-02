@@ -48,14 +48,11 @@ class KnightWorldWatchFaceService : ListenableWatchFaceService() {
             watchState
         )
 
-        // CORRECCIÓN: Pasar el UserStyleSchema directamente al constructor de WatchFace.
-        // --- CORRECCIÓN AQUÍ ---
-        // En la versión 1.2.0, el UserStyleSchema es el tercer parámetro, sin nombre.
         return WatchFace(
-            WatchFaceType.DIGITAL,
-            renderer,
-            complicationSlotsManager,
-            currentUserStyleRepository
+            watchFaceType = WatchFaceType.DIGITAL,
+            renderer = renderer,
+            complicationSlotsManager = complicationSlotsManager,
+            currentUserStyleRepository = currentUserStyleRepository
         )
     }
 
