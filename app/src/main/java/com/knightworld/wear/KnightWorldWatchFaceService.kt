@@ -125,7 +125,7 @@ private class KnightWorldRenderer(
         style = Paint.Style.FILL
         isAntiAlias = true
     }
-    
+
     private val moralePaint = Paint().apply {
         color = ContextCompat.getColor(appContext, R.color.knight_morale)
         style = Paint.Style.FILL
