@@ -1,0 +1,400 @@
+1) Escenas y navegación
+
+Boot: inicializa singletons persistentes (SaveManager, Catalog, Managers) y salta a Cabin.
+
+Cabin: hub principal (mochila y arranque del viaje).
+
+Travel: mapa en vivo, eventos, HUD de eventos.
+
+Rewards: botín, pestaña de eventos/combates, mapa con ruta final.
+
+Missions: listado/progreso de misiones.
+
+GameManager: rutas GoToCabin/GoToTravel/GoToRewards/GoToMissions (asegúrate que los nombres de escenas coinciden).
+
+UIRouter: “puente” de botones de UI a GameManager.
+
+2) Sistemas/Managers (responsabilidades y estado)
+
+Persistencia
+
+SaveManager: guardado atómico (tmp+bak), debounce, migraciones (versionado), reset y carga con fallback. Punto único de verdad SaveManager.I.Data. Guardar al pausar/quitar (móvil).
+
+SaveDebugUI: utilidades para ver/forzar guardado, reset, recarga.
+
+Catálogo
+
+Catalog: carga de Items y Biomes desde Resources/, índices por id (lowercase), GetItem/GetBiome.
+
+Inventario/Economía
+
+InventoryManager: stacks en runtime, equipamiento simple, conversión a InventorySlot[], métodos Add/Remove/AddById, persistencia diferida.
+
+EconomyManager: monedas blandas con AddCoins, TrySpend, evento OnCoinsChanged para UI.
+
+InventoryQuickTest (dev-only): ejemplo de alta rápida de items.
+
+Viaje/Mapa/Eventos
+
+StepManager: vida del viaje (StartTrip, AddDebugSteps, ReturnHome), eventos OnStepsChanged/OnTripEnded, compone summary, añade recompensas, aplica progreso a misiones y navega a Rewards. Llama a MapManager para inicializar/terminar run y para “steps gained”.
+
+MapManager: (en el proyecto) grid NxM, bioma por celda, celdas visitadas, fog-of-war, eventos por tile, bloqueo de movimiento durante eventos, registro de ruta (puntos rojos en Rewards).
+
+TravelMapView: pinta mapa en Travel (base + overlay + badges).
+
+EventPopupUI / EventHUDUI: popup Entrar/ Ignorar + HUD de progreso (N pasos para resolver), contador de encuentros, cierre y consumo del evento.
+
+Recompensas/Misiones
+
+RewardsUI: lista de botín, pestaña Eventos & Combates (log), mapa final con ruta (RewardsMapView).
+
+Missions: sistema con toasts al completar (y panel de completadas en Rewards).
+
+Tienda
+
+MerchantDB / ShopOfferSO / ShopService: pool de ofertas por bioma y selección por visita.
+
+MerchantPopupUI / MerchantOfferRowUI: compra con Coins, reanuda viaje al cerrar.
+
+Mochila/Loadout
+
+TravelLoadoutRulesSO: límites por categoría y listas permitidas; id de camp kit.
+
+LoadoutManager: Add/Remove/Set, ClampToRules, ValidateBeforeTrip (avisos).
+
+LoadoutUnifiedUI: panel unificado tipo “mochila” (imagen + huecos izquierda por categoría + lista completa a la derecha con stock restante); chips removibles.
+
+CabinUI: abre la mochila desde Cabin y al pulsar Listo arranca el viaje (valida/clampa y StartTrip + GoToTravel).
+
+ToastManager/ToastUI: avisos in-app (usados en misión completada/validaciones).
+
+Referencias directas al código subido: GameManager/UIRouter/EconomyManager/InventoryManager/SaveDebugUI/SaveManager/StepManager/Catalog. El resto está implementado según nuestra guía y conversaciones; verifica su carpeta en Assets/_Project/Scripts/.
+
+3) Modelo de datos (SaveData) — visión práctica
+
+Campos clave (consolidado):
+
+version, lastSaveUnix (migraciones, auditoría).
+
+coins, inventory (capacity, items[]), equipment (weaponId/armorId/accessoryId).
+
+missions (progreso, disponibles/aceptadas/completadas).
+
+trip (isActive, biomeId, stepsThisTrip) + tripLog (combats[], eventSummaries[]).
+
+activeEvent (isActive, tileIdx, type, stepsRequired, stepsAccum).
+
+loadout (potions[], statusItems[], accessoryId, keyId, hasCampKit).
+
+Este esquema está diagramado también en el PDF completo generado.
+
+4) Flujo de juego (alto nivel)
+
+Cabin → pulsa Viaje → abre LoadoutUnifiedUI → Listo.
+
+Travel → auto-movimiento por celdas descubiertas/adyacentes; si hay evento, popup Entrar/ Ignorar; si entras, N pasos internos (no avanzan el mapa), encuentros aleatorios y boss al finalizar.
+
+Rewards → botín consolidado, misiones completadas (lista + toasts), mapa con ruta (puntos rojos) y resumen.
+
+Volver a Cabin.
+(Diagramas en el PDF).
+
+5) Estructura de carpetas (Unity)
+Assets/
+  _Project/
+	Animation/
+	Art/
+		Bioma/
+		Icons/
+		Items/
+		Player/
+		UI/
+	Audio/
+	Data/
+	Prefabs/
+	Resources/
+        Items/          ← ítems para Catalog
+			Accesorios/
+				Amulet_green.asset
+			Equipable/
+				Armor_leather.asset
+				Sword_wood.asset
+			Materiales/
+				Herb_common.asset
+				Sand_Shard.asset
+				wood.asset
+			Mercader/
+				Potion_small.asset
+			Mochila viaje/
+				Rules.asset
+			Pociones/
+				Curacion/
+					Potion_small.asset
+				Estado/
+					Antidoto.asset
+			
+			
+        Biomes/         ← biomas para Catalog
+			Desert.asset
+			Forest.asset
+			Montain.asset
+			Prado.asset
+		Eventos/
+			eventVisualDB.asset
+		Map/
+			MapConfig.asset
+		Missions/
+			M_Deliver_Grass.asset
+			M_Gather_Herb.asset
+			M_Gather_Wood.asset
+			M_Steps_500.asset
+    Scenes/
+      Boot.unity
+      Cabin.unity
+      Travel.unity
+      Rewards.unity
+      Missions.unity
+    Scripts/
+		Core/
+			GameManager.cs           ← navegación escenas
+			UIRouter.cs              ← helpers de UI
+			SaveManager.cs           ← guardado atómico + migraciones
+			Catalog.cs               ← carga de Items/Biomes
+		DataModels/
+			SaveData.cs
+		Gameplay/
+			Biomaes/
+				Biome.cs
+			Encountres/
+				EncounterService.cs
+			Enemy/
+				Enemy.cs
+			Events/
+				EventService.cs
+			Items/
+				Item.cs
+				ItemRules.cs
+			Loadout/
+				LoadoutManager.cs
+				SelectdChipUI.cs
+				TravelLoadoutRulesSO.cs
+			Missions/
+				MissionManager.cs
+				Mission.cs
+				MissionQuickTest.cs
+				MissionDebugList.cs
+			Shop/
+				MerchantDB.cs 
+				ShopOfferSO.cs
+				ShopService.cs
+		Map/
+			MapConfig.cs
+			MapEventCombat.cs
+			MapEventType.cs 
+			MapEventVisualDB.cs
+			MapManager.cs			
+        Systems/
+			Combat/
+			Data/
+			Economy/
+				EconomyManager.cs
+			Inventory/
+				InventoryManager.cs
+				InventoryQuickTest.cs  ← dev only
+			
+			Persistence/
+			
+			Steps/
+				StepManager.cs
+		UI/
+			Events/
+				EventPopupUI.cs
+				EventHUDUI.cs
+			Missions/
+				MissionManager.cs
+				CompletedMissionRowUI.cs
+			Rewards/
+				RewardsUI.cs
+				RewardsMapView.cs
+			Shop/
+				MerchantDB.cs
+				ShopOfferSO.cs
+				MerchantPopupUI.cs
+				MerchantOfferRowUI.cs
+			Loadout/
+				LoadoutManager.cs
+				TravelLoadoutRulesSO.cs
+				LoadoutUnifiedUI.cs
+				SelectedChipUI.cs
+				ItemPickRowUI.cs
+				CabinUI.cs
+			UICommon/
+				ToastManager.cs
+				ToastUI.cs
+				SaveDebugUI.cs
+      Data/
+        ScriptableObjects/
+          Items/        ← Item.asset (por id)
+          Biomes/       ← Biome.asset (id, tint, sprite mapa, loot)
+          Shop/         ← ShopOfferSO assets
+          Missions/     ← definiciones de misiones
+          Map/          ← MapConfig (seed, ancho/alto, pool biomas)
+      
+      Art/
+        UI/
+        Icons/
+        MapTiles/       ← sprites de biomas (meadow/forest/desert/mountain)
+
+
+(Los ficheros citados arriba están basados en los que subiste y en lo ya implementado. Revisa que todos los Singletons estén en Boot y con DontDestroyOnLoad.)
+
+6) Scripts ya implementados (confirmados en repo de trabajo)
+
+GameManager.cs, UIRouter.cs: navegación y métodos GoTo… (Cabin/Travel/Rewards/Missions).
+
+SaveManager.cs (+ SaveDebugUI.cs): guardado/carga, migraciones, utilidades.
+
+Catalog.cs: carga de Items/Biomes en Resources.
+
+InventoryManager.cs, InventoryQuickTest.cs: stacks/equipo y ejemplo de alta.
+
+EconomyManager.cs: monedas y eventos de UI.
+
+StepManager.cs: ciclo del viaje, cálculo de recompensas y transición a Rewards.
+
+Resto (presentes en el proyecto según nuestra guía y tus subidas previas): MapManager, TravelMapView, EventPopupUI, EventHUDUI, RewardCalculator, RewardsMapView, RewardsUI, Missions (manager/UI), Merchant*, Loadout*, Toasts.
+
+7) Checklist de montaje (para que arranque a la primera)
+
+Boot.unity
+
+GO SaveManager, Catalog, InventoryManager, EconomyManager, StepManager, GameManager (todos con DontDestroyOnLoad).
+
+GameManager: asigna nombres de escenas reales.
+
+Cabin.unity
+
+Botón Viaje → CabinUI.OnClickOpenLoadout().
+
+Panel LoadoutUnifiedUI (inactivo por defecto). Botones Listo / Cancelar conectados a CabinUI.
+
+CabinUI.defaultBiomeId: el bioma inicial (“meadow”, por ejemplo).
+
+Travel.unity
+
+StepManager referenciado; MapManager con MapConfig asignado; TravelMapView enlazado.
+
+EventPopupUI y EventHUDUI conectados a MapManager/StepManager.
+
+Tienda: MerchantPopupUI y filas de oferta (prefab).
+
+Rewards.unity
+
+RewardsUI con referencias a textos (TMP), contenedor de lista de botín, RewardsMapView, pestaña de eventos/combates (prefab de fila) y ToastManager.
+
+Resources/
+
+Resources/Items/* y Resources/Biomes/* listos (ids únicos). Catalog recarga al arrancar.
+
+SaveData
+
+Si cambias el esquema, sube SaveManager.CurrentVersion y añade migración.
+
+8) Debug rápido / QA
+
+Añadir ítems: InventoryQuickTest (dev-only) o desde Shop.
+
+Monedas: SaveDebugUI (+100, guardar, reset).
+
+Pasos: usa StepManager.debugAddPerClick o botones debug para AddDebugSteps.
+
+Simulación sin reloj: Travel/HUD tienen flujo completo con pasos simulados.
+
+9) Estado actual de features
+
+✅ Viaje completo (start→travel→eventos→rewards).
+
+✅ Mapa con biomas, fog-of-war, ruta (puntos), badges de eventos.
+
+✅ Eventos: progreso por pasos internos, encuentros y boss; bloqueo de movimiento durante evento; consumo al cerrar.
+
+✅ Recompensas y misiones completadas (lista + toasts).
+
+✅ Mochila unificada con clasificación por categoría y cupos.
+
+✅ Tienda del mercader por visita (ofertas ponderadas).
+
+✅ Persistencia robusta (atomic save, debounce, migraciones).
+
+⏳ Combate detallado/HP/estados (pendiente).
+
+⏳ Balance bosses/recompensas únicas.
+
+⏳ Integración smartwatch (fase posterior, diseño preparado).
+(Detalle y diagramas: ver PDF “Documento Completo” que ya generamos).
+
+10) Backlog (orden recomendado para retomar)
+
+Combate y estados (Alta prioridad)
+
+PlayerStats (HP/ATK/DEF), persistencia en run.
+
+EnemySO por bioma y rareza; loot y estados que aplican.
+
+Daño: max(1, ATK-DEF ± var); derrota → ReturnHome(Death).
+
+Estados: Poison (tick por paso/encuentro), Paralysis (chance de fallar), Duraciones.
+
+Ítems de mochila en evento/combate: potion_small cura, antidote limpia Poison, esna limpia todos (consumo de loadout e inventario).
+
+HUD de combate “rápido” y logging en tripLog.
+
+Mapa/Eventos (Media)
+
+Balance de N pasos por tipo de evento y probabilidad de encuentros.
+
+Bosses por bioma con recompensas únicas (accesorios/llaves).
+
+Fog-of-war con desvanecido + revelado por adyacentes.
+
+Economía/Progreso (Media)
+
+Ofertas por tier/bioma; accesorios con pasivas (ej. bonus en bosque).
+
+Curva de monedas: ganancias vs. precios vs. límites.
+
+Calidad (Media/Baja)
+
+Pooling en UI de listas y celdas de mapa (menos GC).
+
+Localización (ES/EN) y accesibilidad (fuentes/contraste).
+
+Analytics opcional (balance/dificultad) + tests de guardado/migraciones.
+
+Smartwatch (Plan)
+
+Opción A: watchface + notificaciones (eventos, “volver a casa”).
+
+Opción B: app compañera Wear OS (Data Layer) + watchface “status”.
+
+11) Notas de riesgos y decisiones tomadas
+
+Guardado: siempre usar SaveManager.SaveQueued() salvo acciones críticas (usa SaveNow() con moderación).
+
+IDs: items/biomes normalizados a lowercase en Catalog, sin duplicados.
+
+Eventos: los pasos dentro del evento no avanzan el mapa; al finalizar, no hay “salto” de casillas (solucionado).
+
+ReturnHome: protegido contra reentradas, limpia run y navega a Rewards.
+
+12) Cómo continuar hoy (pasos accionables de inicio)
+
+Crear PlayerStats.cs (singleton o componente en Travel) + UI mínima de HP.
+
+Crear EnemySO (+DB por bioma) y un EncounterService que genere enemigos durante eventos.
+
+Implementar cálculo de daño y derrota (llamar a StepManager.ReturnHome(Death) cuando HP ≤ 0).
+
+Conectar poción/antídoto/esna desde Loadout dentro del HUD de evento/combate (consume y refleja en UI).
+
+Registrar combats en tripLog para verlos en Rewards (ya hay pestaña).
